@@ -8,9 +8,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 ayudante =Ayudante(id_ayudante=1, nombre='Peron', costo=1000, bonificacion=50, obtenido=False)
 
 
-@app.route('/')
+@app.route('/', methods=["GET"])
 def hello_world():
     return 'esta es mi pagina'
+
+@app.route('/carpincho', methods=["POST"])
+def nuevo_carpincho():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    print(nombre)
+    return 'esta es mi pagina'
+
 
 if __name__ == '__main__':
     print('starting server...')

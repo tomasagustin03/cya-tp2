@@ -12,10 +12,15 @@ ayudante =Ayudante(id_ayudante=1, nombre='Peron', costo=1000, bonificacion=50, o
 def hello_world():
     return 'index.html'
 
-@app.route('/carpincho/index.html', methods=["POST"])
+@app.route('/carpincho', methods=["GET"])
+def edicion_carpincho():
+    return 'esta es mi pagina'
+
+@app.route('/carpincho', methods=["POST"])
 def nuevo_carpincho():
-    data = request.get_json()
-    nombre = data.get('nombre')
+    #data = request.get_json()
+    #nombre = data.get('nombre')
+    nombre = request.json.get("nombre")
     print(nombre)
     return 'esta es mi pagina'
 

@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template, jsonify
 from models import db, Carpincho, Ayudante, Mostrador, Nivel
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../frontend')
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql+psycopg2://esobrad:esobrad@localhost:5432/cya'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
@@ -10,9 +10,9 @@ ayudante =Ayudante(id_ayudante=1, nombre='Peron', costo=1000, bonificacion=50, o
 
 @app.route('/', methods=["GET"])
 def hello_world():
-    return 'esta es mi pagina'
+    return 'index.html'
 
-@app.route('/carpincho', methods=["POST"])
+@app.route('/carpincho/index.html', methods=["POST"])
 def nuevo_carpincho():
     data = request.get_json()
     nombre = data.get('nombre')

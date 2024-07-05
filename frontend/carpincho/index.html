@@ -20,10 +20,9 @@
                     <p>INSERTE EL NOMBRE DEL CARPINCHO</p>
                 </div>
                 <div class="start-input">
-                    <form method='POST'>
-                        <label for=""></label>
-                        <input type="text" name="nombre">
-                        <input type="submit" value="ENVIAR">
+                    <form onsubmit="crear_carpincho(); return false">
+                        <input type="text" name="nombre" placeholder="Nombre">
+                        <input type="submit" value="Enviar">
                     </form>
                 </div>
             </div>
@@ -32,5 +31,29 @@
             </div>
         </div>
     </div>
+
+    <!--SCRIPTS-->
+    <script>
+        function crear_carpincho() {
+            event.preventDefault();
+            const nombre = document.querySelector('input[name="nombre"]').value;
+
+            fetch('http://localhost:5000/carpincho', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({nombre: nombre}), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Nombre recibido:' + data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
 </body>
 </html>

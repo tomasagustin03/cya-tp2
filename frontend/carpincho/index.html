@@ -20,14 +20,17 @@
                     <p>INSERTE EL NOMBRE DEL CARPINCHO</p>
                 </div>
                 <div class="start-input">
-                    <form onsubmit="crear_carpincho(); return false">
+                    <form onsubmit="crear_carpincho()">
                         <input type="text" name="nombre" placeholder="Nombre">
-                        <input type="submit" value="Enviar">
+                        <input type="submit" value="Guardar">
                     </form>
                 </div>
             </div>
             <div class="start-button" style="display: inline-block;">
                 <a href="..">VOLVER</a>
+            </div>
+            <div class="start-button" style="display: inline-block;">
+                <a href="../juego" style="background-color: rgb(235, 235, 63); color: black;">AVANZAR</a>
             </div>
         </div>
     </div>
@@ -48,7 +51,6 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                alert('Nombre recibido:' + data);
             })
             .catch((error) => {
                 console.error('Error:', error);

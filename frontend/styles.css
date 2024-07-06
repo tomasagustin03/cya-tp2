@@ -49,3 +49,26 @@ body{
 .start-button a:hover{
     background-color: rgb(53, 151, 79, 0.8);
 }
+.start-index{
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.start-button p{
+    flex-grow: 0 1 auto;
+    font-family: monospace;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background-color: rgb(53, 151, 79);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    margin: 0 auto;
+}
+
+.start-button p:hover{
+    cursor: pointer;
+    background-color: rgb(53, 151, 79, 0.8);
+}

@@ -15,20 +15,37 @@ ayudante =Ayudante(id_ayudante=1, nombre='Peron', costo=1000, bonificacion=50, o
 def hello_world():
     return 'index.html'
 
-#@app.route('/carpincho', methods=["GET"])
-#def edicion_carpincho():
-#    return 'esta es mi pagina'
+@app.route("/carpincho", methods=["GET"])
+def carpincho():
+    try:
+        carpincho = Carpincho.query.get(1)
+        carpincho_data = {
+            'id': carpincho.id,
+            'nombre': carpincho.nombre,
+            'plata': carpincho.plata,
+            'tiempo_de_coccion': carpincho.tiempo_de_coccion,
+            'nivel': carpincho.nivel
+        }
+        return jsonify(carpincho_data)
+    except:
+        return jsonify({'mensaje': 'El carpincho no existe'})
 
 @app.route('/carpincho', methods=["POST"])
 def nuevo_carpincho():
     print('hola')
 
-    data = request.json
-    nombre = data.get('nombre')
-    print(f"Nombre recibido: {nombre}")
-    response = jsonify(f"Nombre recibido: {nombre}")
-    print(response)
-    return response
+    try:
+        data = request.json
+        nombre = data.get('nombre')
+        carpincho = Carpincho.query.get(1)
+        if carpincho is None:
+            return jsonify({'message': 'error'})
+        carpincho.nombre = nombre
+        db.session.commit()
+        print(f"Nombre recibido: {nombre}")
+        return jsonify({'message': 'Carpincho actualizado', 'carpincho': {'id': carpincho.id, 'nombre': carpincho.nombre}})
+    except Exception as e:
+        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
 
 
 

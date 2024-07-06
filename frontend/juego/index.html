@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <title>Carpinchos y Asados</title>
+</head>
+<body>
+    <div class="start-container">
+        <div class="start-title">
+            <h1>Bienvenido, <span id="nombre_carpincho"></span></h1>
+        </div>
+        <div class="start-content">
+            <div class="start-button" style="margin-top: 0;">
+                <p onclick="toggle_cocinar()" id="timer-button">COCINAR</p>
+            </div>
+        </div>
+    </div>
+    <div class="register-container">
+
+    </div>
+    <script>
+        let cocinando = false;
+        function registro(){
+            console.log("+100");
+        }
+        function toggle_cocinar(){
+            const button = document.getElementById("timer-button");
+            if(button.innerText == "COCINAR"){
+                button.innerText = "PARAR";
+                cocinando = true;
+                cocinarA();
+            } else {
+                button.innerText = "COCINAR";
+                cocinando = false;
+            }
+        }
+        function cocinarA(){
+            //document.getElementById("timer-button").innerText = "PARAR";
+            //setTimeout(reset, 20000);
+            if(cocinando){
+                setTimeout(()=>{registro(); cocinarA()}, 5000);
+            }
+        }
+
+        function cocinarB(){
+            if(cocinando){
+                setTimeout(()=>{registro(); cocinarA()}, 5000);
+            }
+        }
+
+        function response_recieved(response){
+            return response.json()
+        }
+
+        function parse_data(content) {
+
+            const container = document.getElementById("nombre_carpincho");
+            console.log(content);
+            container.innerText = content.nombre;
+        }
+
+        fetch('http://localhost:5000/carpincho') // fetch(url, options_object)
+        .then(response_recieved)
+        .then(parse_data)
+        .catch(request_error);
+    </script>
+</body>
+</html>

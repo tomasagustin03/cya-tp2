@@ -21,7 +21,6 @@ class Ayudante(db.Model):
 
 class Mostrador(db.Model):
     __tablename__ = 'mostrador'
-    id_asado = db.Column(db.Integer, primary_key=True)
     id_ayudante = db.Column(db.Integer, db.ForeignKey('ayudantes'))
     platos = db.Column(db.Integer, nullable=False)
 

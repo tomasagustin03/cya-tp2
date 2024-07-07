@@ -47,7 +47,40 @@ def nuevo_carpincho():
     except Exception as e:
         return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
 
+@app.route('/carpincho/ayudante/<id_ayudante>', methods=["POST"])
+def comprar_ayudante():
 
+    try:
+        data = request.json
+        nombre = data.get('nombre')
+        obtenido = data.get('obtenido')
+        ayudante = Ayudante.query.get(id)
+        if ayudante is None:
+            return jsonify({'message': 'error: no existe ese ayudante'})
+        ayudante.nombre = nombre
+        ayudante.obtenido = obtenido
+        db.session.commit()
+        print(f"Nombre recibido: {nombre}")
+        print(f"Obtenido: {obtenido}")
+        return jsonify({'message': 'Ayudante comprado', 'ayudante': {'id': ayudante.id_ayudante, 'nombre': ayudante.nombre}})
+    except Exception as e:
+        return jsonify({'message': 'Error al comprar el ayudante', 'error': str(e)})
+    
+@app.route('/carpincho/nivel/<id_nivel>', methods=["POST"])
+def comprar_nivel(id_nivel):
+
+    try:
+        nivel = Nivel.query.get(id_nivel)
+        carpincho = Carpincho.query.get(nivel.id)
+        if nivel is None:
+            return jsonify({'message': 'error: no existe ese nivel'})
+        nivel.obtenido = True 
+        carpincho.nivel = nivel
+        db.session.commit()
+        print(f"Nivel comprado: {nivel}")
+        return jsonify({'message': 'Nivel comprado', 'nivel': {'id': nivel.id_nivel, 'obtenido': nivel.obtenido}})
+    except Exception as e:
+        return jsonify({'message': 'Error al comprar el nivel', 'error': str(e)})
 
 if __name__ == '__main__':
     print('starting server...')

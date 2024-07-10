@@ -72,3 +72,37 @@ body{
     cursor: pointer;
     background-color: rgb(53, 151, 79, 0.8);
 }
+
+.content {
+    height: 2000px; /* Para simular contenido largo */
+    padding-bottom: 10px; /* Para que el contenido no se oculte detrás de la barra */
+}
+
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #033000;
+    color: white;
+    text-align: center;
+    box-shadow: 0 -2px 5px rgba(3, 23, 0, 0.5); /* Sombra para la barra */
+}
+
+.plates-title {
+    background-color: #014508;
+    padding: 10px 0;
+}
+
+
+.bottom-bar {
+    padding: 30px 0;
+    overflow-x: auto; /* Permite el scroll horizontal */
+    white-space: nowrap; /* Evita que las imágenes se envuelvan */
+    max-width: 55%;
+    margin: 0 auto;
+}
+
+.bottom-bar img {
+    margin: 0 10px;
+}

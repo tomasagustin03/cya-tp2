@@ -20,10 +20,24 @@
     <div class="register-container">
 
     </div>
+    <div class="fixed-footer">
+        <div class="plates-title">
+            <p>TUS PLATOS</p>
+        </div>
+        <div class="bottom-bar">
+            <img src="../imagenes/asado_es_block.png" width="75px" height="75px" alt="Plato hecho">
+        </div>
+    </div>
     <script>
         let cocinando = false;
         function registro(){
-            console.log("+100");
+            fetch('http://localhost:5000/asado/<id_asado>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({nombre: document.getElementById("nombre_carpincho").innerText})
+            });
         }
         function toggle_cocinar(){
             const button = document.getElementById("timer-button");

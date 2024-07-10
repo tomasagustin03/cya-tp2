@@ -24,12 +24,21 @@
         <div class="plates-title">
             <p>TUS PLATOS</p>
         </div>
-        <div class="bottom-bar">
+        <div class="bottom-bar" id="asados">
             <img src="../imagenes/asado_es_block.png" width="75px" height="75px" alt="Plato hecho">
         </div>
     </div>
     <script>
         let cocinando = false;
+
+        /*function listar_data(content) {
+            const container = document.getElementById("asados");
+            for (let index = 0; index < content.length; index++) {
+                const item = document.createElement("img");
+                item.src = "../imagenes/asado_es_block.png";
+            }
+        }*/
+
         function registro(){
             fetch('http://localhost:5000/asado/<id_asado>', {
                 method: 'POST',

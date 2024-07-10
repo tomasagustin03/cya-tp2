@@ -45,7 +45,21 @@ def nuevo_carpincho():
     except Exception as e:
         return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
     
-"""@app.route('/juego/<id>/nuevo_asado/<id_asado>', methods=["POST"])
+"""@app.route('/juego/<id>/asado/<id_asado>', methods=["GET"])
+def asados(id_asado, id):
+    try:
+        tipo_asado = TipoAsado.query.get(id_asado)
+        carpincho = Carpincho.query.get(id)
+        fecha_cosecha = datetime.datetime.now() + datetime.timedelta(seconds = carpincho.tiempo_de_coccion)
+        nuevo_asado = Asado(id = id, tipo_asado_id = id_asado, fecha_cosecha = fecha_cosecha)
+        db.session.add(nuevo_asado)
+        db.session.commit()
+        print(f"Nombre recibido: {nombre}")
+        return jsonify({'message': 'Carpincho actualizado', 'carpincho': {'id': carpincho.id, 'nombre': carpincho.nombre}})
+    except Exception as e:
+        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
+
+@app.route('/juego/<id>/nuevo_asado/<id_asado>', methods=["POST"])
 def nuevo_asado(id_asado, id):
     try:
         tipo_asado = TipoAsado.query.get(id_asado)
@@ -98,7 +112,7 @@ if __name__ == '__main__':
     print('starting server...')
     db.init_app(app)
     with app.app_context():
-        #db.drop_all()
+        ##db.drop_all()
         db.create_all()
     print('started...')
     app.run(host='0.0.0.0', debug=True, port=port)

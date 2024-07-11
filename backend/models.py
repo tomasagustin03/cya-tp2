@@ -16,6 +16,7 @@ class Ayudante(db.Model):
     id_ayudante = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
     costo = db.Column(db.Integer, nullable=False)
+    imagen_url = db.Column(db.String(255), nullable=False)
     bonificacion = db.Column(db.Integer, nullable=False)
     obtenido = db.Column(db.Boolean, nullable=False)
 

@@ -45,19 +45,18 @@ def nuevo_carpincho():
     except Exception as e:
         return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
     
-"""@app.route('/juego/<id>/asado/<id_asado>', methods=["GET"])
-def asados(id_asado, id):
-    try:
-        tipo_asado = TipoAsado.query.get(id_asado)
-        carpincho = Carpincho.query.get(id)
-        fecha_cosecha = datetime.datetime.now() + datetime.timedelta(seconds = carpincho.tiempo_de_coccion)
-        nuevo_asado = Asado(id = id, tipo_asado_id = id_asado, fecha_cosecha = fecha_cosecha)
-        db.session.add(nuevo_asado)
-        db.session.commit()
-        print(f"Nombre recibido: {nombre}")
-        return jsonify({'message': 'Carpincho actualizado', 'carpincho': {'id': carpincho.id, 'nombre': carpincho.nombre}})
-    except Exception as e:
-        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
+@app.route('/mostrador', methods=["GET"])
+def obtener_mostrador():
+    mostrador = Mostrador.query.all()
+    ayudante = Ayudante.query.all()
+    mostrador_data = []
+    for asado in mostrador:
+        imagen_url = ayudante[asado.id_ayudante - 1].imagen_url
+        mostrador_data.append({
+            'imagen_url': imagen_url,
+            'platos': asado.platos
+        })
+    return jsonify(mostrador_data)
 
 @app.route('/juego/<id>/nuevo_asado/<id_asado>', methods=["POST"])
 def nuevo_asado(id_asado, id):
@@ -71,7 +70,7 @@ def nuevo_asado(id_asado, id):
         print(f"Nombre recibido: {nombre}")
         return jsonify({'message': 'Carpincho actualizado', 'carpincho': {'id': carpincho.id, 'nombre': carpincho.nombre}})
     except Exception as e:
-        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500"""
+        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
 
 @app.route('/carpincho/ayudante/<id_ayudante>', methods=["POST"])
 def comprar_ayudante():

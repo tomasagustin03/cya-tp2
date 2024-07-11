@@ -25,19 +25,55 @@
             <p>TUS PLATOS</p>
         </div>
         <div class="bottom-bar" id="asados">
-            <img src="../imagenes/asado_es_block.png" width="75px" height="75px" alt="Plato hecho">
+            
         </div>
     </div>
     <script>
         let cocinando = false;
+        let imagen_url; 
+        set_imagen_url();
+        cargar_mostrador();
 
-        /*function listar_data(content) {
-            const container = document.getElementById("asados");
-            for (let index = 0; index < content.length; index++) {
-                const item = document.createElement("img");
-                item.src = "../imagenes/asado_es_block.png";
+        async function set_imagen_url() {
+        try {
+            const response = await fetch('http://localhost:5000/imagen');
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
             }
-        }*/
+            imagen_url = await response.json();
+        } catch (err) {
+            console.error('Error al cargar las imágenes:', err);
+        }
+        }
+
+        async function cargar_mostrador() {
+        try {
+            const response = await fetch('http://localhost:5000/mostrador');
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            const mostrador = await response.json();
+
+            const container = document.getElementById('asados');
+            container.innerHTML = '';
+
+            mostrador.forEach(asado => {
+            for (let i = 0; i < asado.platos; i++) {
+                //const imgDiv = document.createElement('div');
+                const img = document.createElement('img');
+                
+                img.src = asado.imagen_url;
+                img.width = "75";
+                img.height = "75";
+                //imgDiv.appendChild(img);
+                container.appendChild(img);
+            }
+            });
+        } catch (err) {
+            console.error('Error al cargar el mostrador:', err);
+        }
+        }
+
 
         function registro(){
             fetch('http://localhost:5000/asado/<id_asado>', {

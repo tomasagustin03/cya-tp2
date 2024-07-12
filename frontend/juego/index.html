@@ -8,6 +8,10 @@
 </head>
 <body>
     <div class="start-container">
+        <div class="contenedor-info" style="position: absolute; top:50px; right: 400px;">
+            <p style="text-align: center;">plata:</p>
+            <p id="plata">000</p>
+        </div>
         <div class="start-title">
             <h1>Bienvenido, <span id="nombre_carpincho"></span></h1>
         </div>
@@ -28,29 +32,58 @@
             
         </div>
     </div>
+    <div class="start-button">
+        <p onclick="vender_asado()" style="position: absolute; bottom: 45px; right: 115px; background-color: white; color: black;">VENDER ASADO</p>
+    </div>
     <script>
+        let plata;
         let cocinando = false;
-        let imagen_url; 
-        set_imagen_url();
+        let imagen_en_uso_url; 
+        set_imagen_en_uso_url();
         cargar_mostrador();
+        set_plata();
 
-        async function set_imagen_url() {
+        function request_error(error){
+            console.error('Error:', error);
+        }
+        function set_plata(){
+            fetch('http://localhost:5000/plata')
+            .then(response => response.json())
+            .then(data => {
+                plata = data;
+                const container = document.getElementById('plata');
+                container.innerText = plata;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+        async function set_imagen_en_uso_url() {
         try {
             const response = await fetch('http://localhost:5000/imagen');
             if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(JSON.stringify(response));
             }
-            imagen_url = await response.json();
+            imagen_en_uso_url = await response.json();
         } catch (err) {
             console.error('Error al cargar las imágenes:', err);
         }
+        }
+
+        function crear_tag_plato(imagen_url) {
+            const container = document.getElementById('asados');
+            const img = document.createElement('img');
+            img.src = imagen_url;
+            img.width = "75";
+            img.height = "75";
+            container.prepend(img);    
         }
 
         async function cargar_mostrador() {
         try {
             const response = await fetch('http://localhost:5000/mostrador');
             if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(JSON.stringify(response));
             }
             const mostrador = await response.json();
 
@@ -59,14 +92,7 @@
 
             mostrador.forEach(asado => {
             for (let i = 0; i < asado.platos; i++) {
-                //const imgDiv = document.createElement('div');
-                const img = document.createElement('img');
-                
-                img.src = asado.imagen_url;
-                img.width = "75";
-                img.height = "75";
-                //imgDiv.appendChild(img);
-                container.appendChild(img);
+                crear_tag_plato(asado.imagen_url);
             }
             });
         } catch (err) {
@@ -74,14 +100,17 @@
         }
         }
 
-
-        function registro(){
-            fetch('http://localhost:5000/asado/<id_asado>', {
+        function guardar_plato(){
+            post_plato();
+            crear_tag_plato(imagen_en_uso_url);
+        }
+        function post_plato(){
+            fetch('http://localhost:5000/mostrador', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({nombre: document.getElementById("nombre_carpincho").innerText})
+                body: {}
             });
         }
         function toggle_cocinar(){
@@ -89,18 +118,46 @@
             if(button.innerText == "COCINAR"){
                 button.innerText = "PARAR";
                 cocinando = true;
-                cocinarA();
+                cocinando_loop();
             } else {
                 button.innerText = "COCINAR";
                 cocinando = false;
             }
         }
-        function cocinarA(){
+        function cocinando_loop(){
             //document.getElementById("timer-button").innerText = "PARAR";
             //setTimeout(reset, 20000);
             if(cocinando){
-                setTimeout(()=>{registro(); cocinarA()}, 5000);
+                setTimeout(()=>{guardar_plato(); cocinando_loop()}, 5000);
             }
+        }
+        async function vender_asado(){
+            const response = await fetch('http://localhost:5000/mostrador', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {}
+            });
+            const asado_vendido = await response.json();
+            console.log(asado_vendido);
+            const container = document.getElementById('asados');
+            container.removeChild(container.lastChild);
+            actualizar_plata(asado_vendido.asado.valor_asado);//TODO embellecer esto
+        }
+        async function actualizar_plata(valor){
+            console.log(valor);
+            const response = await fetch('http://localhost:5000/plata', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({valor: valor})
+            });
+            const plata = await response.json();
+            console.log(plata);
+            const container = document.getElementById('plata');
+            container.innerText = plata.carpincho.plata;//TODO embellecer esto
         }
 
         function cocinarB(){

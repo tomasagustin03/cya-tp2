@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from flask import Flask, request, jsonify, make_response
 from models import db, Carpincho, Ayudante, Mostrador, Nivel
 from flask_cors import CORS
@@ -47,8 +48,10 @@ def nuevo_carpincho():
     
 @app.route('/mostrador', methods=["GET"])
 def obtener_mostrador():
-    mostrador = Mostrador.query.all()
-    ayudante = Ayudante.query.all()
+    mostrador = Mostrador.query.order_by(Mostrador.id_asado).all()
+    print(mostrador)
+    ayudante = Ayudante.query.order_by(Ayudante.id_ayudante).all()
+    print(ayudante)
     mostrador_data = []
     for asado in mostrador:
         imagen_url = ayudante[asado.id_ayudante - 1].imagen_url
@@ -56,21 +59,62 @@ def obtener_mostrador():
             'imagen_url': imagen_url,
             'platos': asado.platos
         })
+    print(mostrador_data)
     return jsonify(mostrador_data)
 
-@app.route('/juego/<id>/nuevo_asado/<id_asado>', methods=["POST"])
-def nuevo_asado(id_asado, id):
+@app.route('/mostrador', methods=["POST"])
+def agregar_asado():
     try:
-        tipo_asado = TipoAsado.query.get(id_asado)
-        carpincho = Carpincho.query.get(id)
-        fecha_cosecha = datetime.datetime.now() + datetime.timedelta(seconds = carpincho.tiempo_de_coccion)
-        nuevo_asado = Asado(id = id, tipo_asado_id = id_asado, fecha_cosecha = fecha_cosecha)
-        db.session.add(nuevo_asado)
+        id_ayudante = Ayudante.query.where(Ayudante.obtenido == True).order_by(desc(Ayudante.id_ayudante)).first().id_ayudante
+        asado = Mostrador.query.get(id_ayudante)
+        if asado is None:
+            return jsonify({'message': 'error'})
+        asado.platos += 1
         db.session.commit()
-        print(f"Nombre recibido: {nombre}")
-        return jsonify({'message': 'Carpincho actualizado', 'carpincho': {'id': carpincho.id, 'nombre': carpincho.nombre}})
+        return jsonify({'message': 'Asado actualizado', 'asado': {'id': asado.id_asado, 'platos': asado.platos}})
     except Exception as e:
-        return jsonify({'message': 'Error al actualizar el carpincho', 'error': str(e)}), 500
+        return jsonify({'message': 'Error al actualizar el asado', 'error': str(e)}), 500
+    
+@app.route('/mostrador', methods=["DELETE"])
+def eliminar_asado():
+    try:
+        asado = Mostrador.query.where(Mostrador.platos > 0).order_by(Mostrador.id_asado).first()
+        valor_asado = Ayudante.query.get(asado.id_ayudante).bonificacion
+        if asado is None:
+            return jsonify({'message': 'error'})
+        asado.platos -= 1
+        db.session.commit()
+        return jsonify({'message': 'Asado actualizado', 'asado': {'id': asado.id_asado, 'platos': asado.platos, 'valor_asado': valor_asado}})
+    except Exception as e:
+        return jsonify({'message': 'Error al actualizar el asado', 'error': str(e)}), 500
+    
+@app.route('/imagen', methods=['GET'])
+def get_images():
+    id_ayudante = Ayudante.query.where(Ayudante.obtenido == True).order_by(desc(Ayudante.id_ayudante)).first().id_ayudante
+    imagen = Ayudante.query.get(id_ayudante).imagen_url
+    print(imagen)
+    return jsonify(imagen)
+
+@app.route('/plata', methods=['GET'])
+def get_plata():
+    carpincho = Carpincho.query.get(1)
+    plata = carpincho.plata
+    return jsonify(plata)
+
+@app.route('/plata', methods=['PUT'])
+def put_plata():
+    try:
+        data = request.json
+        print(data)
+        plata = data.get('valor')
+        carpincho = Carpincho.query.get(1)
+        if carpincho is None:
+            return jsonify({'message': 'error'})
+        carpincho.plata += plata
+        db.session.commit()
+        return jsonify({'message': 'Plata actualizada', 'carpincho': {'id': carpincho.id, 'plata': carpincho.plata}})
+    except Exception as e:
+        return jsonify({'message': 'Error al actualizar la plata', 'error': str(e)}), 500
 
 @app.route('/carpincho/ayudante/<id_ayudante>', methods=["POST"])
 def comprar_ayudante():

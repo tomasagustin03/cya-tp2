@@ -106,3 +106,65 @@ body{
 .bottom-bar img {
     margin: 0 10px;
 }
+
+.juego-top {
+    background-color: #9dbb91;
+    position: fixed;
+    left: 50%;
+    top: 3rem;
+    transform: translate(-50%, -50%);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+    border-radius: 2rem;
+    margin: 10px auto;
+}
+
+.plata-info {
+    display: flex;
+    align-items: center;
+}
+
+.plata-icono {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+#plata {
+    font-size: 18px;
+}
+
+.juego-top .plata-info {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.imagenes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.imagen-row {
+    display: flex;
+    justify-content: center;
+}
+
+.imagenes-item {
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    background-color: #ccc;
+}
+
+#imagen1, #imagen2 {
+    flex: 1;
+}
+
+#imagen3 {
+    margin-top: 10px;
+}

@@ -101,6 +101,26 @@ def get_plata():
     plata = carpincho.plata
     return jsonify(plata)
 
+@app.route('/niveles', methods=['GET'])
+def get_niveles():
+    niveles = Nivel.query.order_by(Nivel.id_nivel).all()
+    niveles_data = []
+    estado = 2
+    for nivel in niveles:
+        if (nivel.obtenido):
+            print(niveles_data) 
+            niveles_data.append({
+                'id_nivel': nivel.id_nivel,
+                'estado': 3
+            })
+        else:
+            niveles_data.append({
+                'id_nivel': nivel.id_nivel,
+                'estado': estado
+            })
+            estado = 3
+    return jsonify(niveles_data)
+
 @app.route('/plata', methods=['PUT'])
 def put_plata():
     try:
@@ -118,7 +138,7 @@ def put_plata():
     
 @app.route('/islas', methods=['GET'])
 def get_islas():
-    ayudantes = Ayudante.query.order_by(desc(Ayudante.id_ayudante)).all()
+    ayudantes = Ayudante.query.order_by(Ayudante.id_ayudante).all()
     islas_data = []
     estado = 2
     for ayudante in ayudantes:
@@ -135,7 +155,7 @@ def get_islas():
             estado = 3
     return jsonify(islas_data)
 
-@app.route('/comprarayudane', methods=["POST"])
+@app.route('/comprarayudante', methods=["POST"])
 def comprar_ayudante():
     try:
         data = request.json

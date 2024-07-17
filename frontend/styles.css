@@ -143,6 +143,10 @@ body{
     align-items: center;
 }
 
+.isla-disponible{
+    margin: 0 auto;
+}
+
 .imagenes-container {
     display: flex;
     flex-direction: column;
@@ -167,4 +171,28 @@ body{
 
 #imagen3 {
     margin-top: 10px;
+}
+
+.overlay{
+    position: absolute;
+}
+.contenedor-islas{
+    display: block;
+    /*justify-content: center;
+    align-items: start;
+    margin-top: 2rem;
+    flex-direction: column;*/
+}
+
+.boton-comprar p{
+    flex-grow: 0 1 auto;
+    font-family: monospace;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background-color: rgb(222, 236, 26);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    margin: 0 auto;
 }

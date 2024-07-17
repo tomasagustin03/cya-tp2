@@ -118,7 +118,7 @@ def get_niveles():
                 'id_nivel': nivel.id_nivel,
                 'estado': estado
             })
-            estado = 3
+            estado = 1
     return jsonify(niveles_data)
 
 @app.route('/plata', methods=['PUT'])
@@ -145,14 +145,16 @@ def get_islas():
         if (ayudante.obtenido):
             islas_data.append({
                 'id_ayudante': ayudante.id_ayudante,
-                'estado': 3
+                'estado': 3,
+                'costo': ayudante.costo
             })
         else:
             islas_data.append({
                 'id_ayudante': ayudante.id_ayudante,
-                'estado': estado
+                'estado': estado,
+                'costo': ayudante.costo
             })
-            estado = 3
+            estado = 1
     return jsonify(islas_data)
 
 @app.route('/comprarayudante', methods=["POST"])

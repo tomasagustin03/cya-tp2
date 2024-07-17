@@ -13,12 +13,23 @@
             <span id="plata">000</span>
         </div>
     </div>
-    <div class="start-container">
-        <div class="start-title">
-            <h1>Bienvenido, <span id="nombre_carpincho"></span></h1>
+    <div class="start-container" style="padding-bottom: 25rem;">
+        <div class="start-title" style="display: inline-block; text-align: center;">
+            <h1 style="margin: 0;">Bienvenido, <span id="nombre_carpincho"></span></h1>
+        </div>
+        <div class="contenedor-islas" id="islas">
+            <div class="isla-izquierda" id="isla2" style="display: inline-block;">
+
+            </div>
+            <div id="isla-principal" style="display: inline-block;">
+
+            </div>
+            <div class="isla-derecha" id="isla3" style="display: inline-block;">
+
+            </div>
         </div>
         <div class="start-content">
-            <div class="start-button" style="margin-top: 0;">
+            <div class="start-button" style="margin-top: 3rem;">
                 <p onclick="toggle_cocinar()" id="timer-button">COCINAR</p>
             </div>
         </div>
@@ -39,25 +50,54 @@
         </div>
     </div>
     <div class="start-button">
-        <p onclick="vender_asado()" style="position: fixed; bottom: 45px; right: 115px; background-color: white; color: black;">VENDER ASADO</p>
+        <p onclick="vender_asado()" 
+        style="position: fixed; bottom: 45px; right: 115px; background-color: white; color: black;">VENDER ASADO</p>
+    </div>
+    <div class="start-button">
+        <p onclick="destructora_de_mundos()" style="position: fixed; background-color: rgb(215, 57, 57); bottom: 45px; left: 115px;">REINICIAR PROGRESO</p>
     </div>
     <script>
+        let imagenes_islas = ['../imagenes/tenedor.png', '../imagenes/co.png', '../imagenes/ca.png'];
         let plata;
         let cocinando = false;
         let imagen_en_uso_url; 
+        crear_isla_principal();
         set_imagen_en_uso_url();
         cargar_mostrador();
         set_plata();
         cargar_islas();
 
-        function comprar_isla(id, precio){
+        async function destructora_de_mundos(){
+            const response = await fetch('http://localhost:5000/reiniciar', {
+                method: 'UPDATE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {}
+            });
+            const data = await response.json();
+            location.href = "http://localhost:8000";
+        }
+
+        function crear_isla_principal(){
+            const container = document.getElementById('isla-principal');
+            const img = document.createElement('img');
+            img.src = "../imagenes/isla_principal.png";
+            img.width = "400";
+            img.height = "400";
+            container.appendChild(img);
+        }
+
+        async function comprar_isla(id, precio){
             if (plata < precio){
                 alert("No tienes suficiente plata");
                 return;
             }
             actualizar_plata(-precio);
-            if (request_compra_isla(id)){
+            const compra_exitosa = await request_compra_isla(id);
+            if (compra_exitosa){
                 cargar_islas();
+                set_imagen_en_uso_url();
             } else{
                 alert("No se pudo comprar la isla");
                 actualizar_plata(precio);
@@ -77,34 +117,63 @@
         }
         async function cargar_islas(){
             const response = await fetch('http://localhost:5000/islas')//TODO devuelve: [{id_ayudante: int, estado: int, }](1 es bloqueado, 2 es disponible, y 3 es obtenido)
-            const islas = await response.json().islas;
+            const islas = await response.json();
+            console.log(islas);
             for (let i = 0; i < islas.length; i++) {
-                crear_tag_isla(islas[i]);
+                if (i != 0 ){
+                    crear_tag_isla(islas[i]);
+                }
             }
         }
 
         function crear_tag_isla_bloqueada(isla){
+            console.log(isla);
             const container = document.getElementById(`isla${isla.id_ayudante}`);
+            container.innerHTML = '';
+            const img = document.createElement('img');
             const div = document.createElement('div');
-            div.className = "isla-bloqueada";
-            //TODO poner algo que la identifique como bloqueada (un candado o algo)
+            div.className = "overlay";
+            img.src = imagenes_islas[isla.id_ayudante - 1];
+            img.width = "200";
+            img.height = "200";
+            const candado = document.createElement('img');
+            candado.src = "../imagenes/candado.png";
+            candado.width = "215";
+            candado.height = "215";
+            candado.className = "overlay";
+            div.appendChild(candado);
             container.appendChild(div);
+            container.appendChild(img);
         }
 
         function crear_tag_isla_disponible(isla){
             const container = document.getElementById(`isla${isla.id_ayudante}`);
+            container.innerHTML = '';
+            const img = document.createElement('img');
             const div = document.createElement('div');
-            div.id = `isla${isla.id_ayudante}`;
-            div.className = "isla-disponible";
-            //TODO poner un boton precioso para comprar
-            div.onclick = ()=>{comprar_isla(isla.id_ayudante, 100)};
+            div.className = "boton-comprar overlay";
+            img.src = imagenes_islas[isla.id_ayudante - 1];
+            img.width = "200";
+            img.height = "200";
+            const boton = document.createElement('p');
+            div.appendChild(boton);
+            container.appendChild(img);
+            //container.appendChild(boton);
             container.appendChild(div);
+            //TODO poner un boton precioso para comprar
+            boton.innerText = "Comprar";
+
+            boton.onclick = ()=>{comprar_isla(isla.id_ayudante, isla.costo)};
         }
 
         function crear_tag_isla_obtenida(isla){
             const container = document.getElementById(`isla${isla.id_ayudante}`);
-            const div = document.createElement('div');
-            container.appendChild(div);
+            container.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = imagenes_islas[isla.id_ayudante - 1];
+            img.width = "200";
+            img.height = "200";
+            container.appendChild(img);
         }
 
         function crear_tag_isla(isla){ //TODO terminar con switch de estado
@@ -119,28 +188,17 @@
                     crear_tag_isla_obtenida(isla);
                     break;
             }
-            const container = document.getElementById(`isla${isla.id_ayudante}`);
-            const img = document.createElement('img');
-            img.src = "isla.png";
-            img.width = "75";
-            img.height = "75";
-            container.prepend(img);
         }
 
         function request_error(error){
             console.error('Error:', error);
         }
-        function set_plata(){
-            fetch('http://localhost:5000/plata')
-            .then(response => response.json())
-            .then(data => {
-                plata = data;
-                const container = document.getElementById('plata');
-                container.innerText = plata;
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        async function set_plata(){
+            const response = await fetch('http://localhost:5000/plata')
+            const data = await response.json();
+            plata = data;
+            const container = document.getElementById('plata');
+            container.innerText = plata;
         }
         async function set_imagen_en_uso_url() {
         try {

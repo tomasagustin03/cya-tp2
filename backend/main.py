@@ -121,6 +121,38 @@ def get_niveles():
             estado = 1
     return jsonify(niveles_data)
 
+@app.route('/ultimonivel', methods=['GET'])
+def ultimo_nivel():
+    try:
+        ultimo_nivel = Nivel.query.where(Nivel.obtenido == True).order_by(desc(Nivel.id_nivel)).first()
+        if ultimo_nivel:
+            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel})
+        else:
+            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel})
+    except Exception as e:
+        return jsonify({'mensaje': 'Error', 'id_ultimo_nivel': 'Null'})
+
+@app.route('/reiniciar', methods=['PUT'])
+def reiniciarprogreso():
+    carpincho = Carpincho.query.get(1)
+    print(carpincho)
+    carpincho.plata = 0
+
+    ayudantes = Ayudante.query.where(Ayudante.id_ayudante > 1)
+    for ayudante in ayudantes:
+        ayudante.obtenido = False
+
+    mostrador = Mostrador.query.all()
+    for plato in mostrador:
+        plato.platos = 0
+
+    niveles = Nivel.query.where(Nivel.id_nivel > 1)
+    for nivel in niveles:
+        nivel.obtenido = False
+
+    db.session.commit()
+    return jsonify({})
+ 
 @app.route('/plata', methods=['PUT'])
 def put_plata():
     try:

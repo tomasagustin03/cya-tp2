@@ -109,6 +109,7 @@ body{
 
 .juego-top {
     background-color: #9dbb91;
+    gap: 2.5rem;
     position: fixed;
     left: 50%;
     top: 3rem;
@@ -116,6 +117,7 @@ body{
     color: white;
     padding: 10px 20px;
     display: flex;
+    justify-content: center;
     align-items: center;
     width: 300px;
     border-radius: 2rem;
@@ -138,7 +140,6 @@ body{
 }
 
 .juego-top .plata-info {
-    margin-left: 20px;
     display: flex;
     align-items: center;
 }
@@ -196,3 +197,68 @@ body{
     font-size: 1.5rem;
     margin: 0 auto;
 }
+
+#container-ventana{
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    position: fixed;
+    display: none;
+}
+.configuracion-container{
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 101;
+    width: 30%;
+    height: 50%;
+    border-radius: 3rem;
+}
+.tienda-container{
+    display: none;
+    position: absolute;
+    background-color: white;
+    flex-direction: column;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 101;
+    width: 30%;
+    height: 50%;
+    border-radius: 3rem;
+}
+.tienda-container p{
+    font-family: monospace;
+    font-size: 2rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+.niveles-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 101;
+}
+/*ANIMACIONES*/
+@keyframes popup {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+.popup {
+    animation: popup 0.5s ease-out forwards;
+  }
+  

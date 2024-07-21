@@ -6,18 +6,39 @@
     <link rel="stylesheet" href="../styles.css">
     <title>Carpinchos y Asados</title>
 </head>
-<body>
+<body style="background-image: url(https://static.vecteezy.com/system/resources/previews/007/162/597/non_2x/green-fresh-grass-herb-seamless-repeat-background-chamomile-in-grass-texture-summer-spring-meadow-lawn-sward-illustration-eco-template-vegan-nature-free-vector.jpg); background-size: cover;">
+    <div id="container-ventana" onclick="cerrar_ventanas()">
+    </div>
+    <div class="configuracion-container" id="ventana">
+        <div class="start-button">
+            <p onclick="destructora_de_mundos()" style="position: fixed; background-color: rgb(215, 57, 57); top: 50%; left: 50%; transform: translate(-50%, -50%);">REINICIAR PROGRESO</p>
+        </div>
+    </div>
+    <div class="tienda-container" id="tienda">
+        <p>TIENDA</p>
+        <div class="niveles-container">
+
+        </div>
+    </div>
     <div class="juego-top">
         <div class="plata-info">
             <img src="../imagenes/plata.png" alt="Icono Plata" class="plata-icono">
             <span id="plata">000</span>
         </div>
-    </div>
-    <div class="start-container" style="padding-bottom: 25rem;">
-        <div class="start-title" style="display: inline-block; text-align: center;">
-            <h1 style="margin: 0;">Bienvenido, <span id="nombre_carpincho"></span></h1>
+        <div class="tienda">
+            <div class="start-button" style="margin-top: 0;" onclick="abrir_tienda()">
+                <p style="font-size: 0.9rem; padding: 0.5rem; border-radius: 3rem; background-color:rgb(240, 128, 128);">TIENDA</p>
+            </div>
         </div>
-        <div class="contenedor-islas" id="islas">
+        <div class="configuracion">
+            <img src="../imagenes/tuerca.png" width="25rem" height="25rem" alt="Icono Configuración" onclick="ventana_configuracion()">
+        </div>
+    </div>
+    <div class="start-container" style="padding-bottom: 5rem;">
+        <div class="start-title" style="display: inline-block; text-align: center;">
+            <h1 style="margin: 0;">Bienvenidx, <span id="nombre_carpincho"></span></h1>
+        </div>
+        <div class="contenedor-islas" id="islas" style="display: flex;">
             <div class="isla-izquierda" id="isla2" style="display: inline-block;">
 
             </div>
@@ -53,9 +74,6 @@
         <p onclick="vender_asado()" 
         style="position: fixed; bottom: 45px; right: 115px; background-color: white; color: black;">VENDER ASADO</p>
     </div>
-    <div class="start-button">
-        <p onclick="destructora_de_mundos()" style="position: fixed; background-color: rgb(215, 57, 57); bottom: 45px; left: 115px;">REINICIAR PROGRESO</p>
-    </div>
     <script>
         let imagenes_islas = ['../imagenes/tenedor.png', '../imagenes/co.png', '../imagenes/ca.png'];
         let plata;
@@ -66,6 +84,91 @@
         cargar_mostrador();
         set_plata();
         cargar_islas();
+
+        async function comprar_nivel(id, estado){
+            const response = await fetch(`http://localhost:5000/carpincho/nivel/${id_nivel}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id: id})
+            });
+            const data = await response.json();
+            console.log(data);
+            if (data.exitoso){
+                get_niveles();
+            }
+        }
+
+        async function get_niveles(){
+            const response = await fetch('http://localhost:5000/niveles');
+            const niveles = await response.json();
+            console.log(niveles);
+            const container = document.querySelector('.niveles-container');
+            if (!container) {
+            throw new Error('Container element not found');
+        }
+            niveles.forEach(nivel => {
+                const div = document.createElement('div');
+                const estilo_boton = document.createElement('div');
+                const texto = document.createElement('p');
+                const boton = document.createElement('p');
+                boton.innerText = "Comprar";
+                estilo_boton.className = "boton-comprar";
+                texto.innerText = "Nivel " + nivel.id_nivel;
+                div.className = 'nivel';
+                estilo_boton.appendChild(boton);
+                div.appendChild(texto);
+                div.appendChild(estilo_boton);
+                container.appendChild(div);
+
+                asignar_boton_nivel(boton, nivel.estado, nivel.id_nivel);
+            });
+        }
+
+        function asignar_boton_nivel(boton, estado, id){
+            switch(estado){
+                case 1:
+                    boton.style = "font-size: 20px; background-color: grey;";
+                    boton.innerHTML = "Bloqueado";
+                    break;
+                case 2:
+                    boton.style = "font-size: 20px; background-color: rgb(240, 128, 128);";
+                    boton.innerHTML = "Comprar";
+                    boton.onclick = ()=>{comprar_nivel(id, estado)};
+                    break;
+                case 3:
+                    boton.style = "font-size: 20px; background-color: rgb(240, 128, 128);";
+                    boton.innerHTML = "Comprado";
+                    break;
+            }
+            /*boton.style = "font-size: 20px; background-color: grey;";
+            boton.innerHTML = "Comprar";
+            boton.onclick = ()=>{comprar_nivel(estado)};*/
+
+        }
+
+        async function abrir_tienda(){
+            document.getElementById('container-ventana').style.display = 'block';
+            document.getElementById('tienda').style.display = 'flex';
+            await get_niveles();
+        }
+
+        function cerrar_ventanas(){
+            document.getElementById('container-ventana').style.display = 'none';
+            document.getElementById('ventana').style.display = 'none';
+            document.getElementById('tienda').style.display = 'none';
+        }
+
+        function ventana_configuracion(){
+            const todo = document.getElementById('container-ventana');
+            document.getElementById('container-ventana').style.display = 'block';
+            document.getElementById('ventana').style.display = 'flex';
+            /*const container = document.createElement('div');
+            container.className = 'configuracion';
+
+            todo.appendChild(container);*/
+        }
 
         async function destructora_de_mundos(){
             const response = await fetch('http://localhost:5000/reiniciar', {
@@ -90,6 +193,7 @@
 
         async function comprar_isla(id, precio){
             if (plata < precio){
+                console.log(plata);
                 alert("No tienes suficiente plata");
                 return;
             }
@@ -132,25 +236,36 @@
             container.innerHTML = '';
             const img = document.createElement('img');
             const div = document.createElement('div');
+            const div_boton = document.createElement('div');
             div.className = "overlay";
+            div_boton.className = "boton-comprar overlay";
             img.src = imagenes_islas[isla.id_ayudante - 1];
             img.width = "200";
             img.height = "200";
             const candado = document.createElement('img');
+            const boton = document.createElement('p');
             candado.src = "../imagenes/candado.png";
             candado.width = "215";
             candado.height = "215";
             candado.className = "overlay";
+            div_boton.appendChild(boton);
             div.appendChild(candado);
+            boton.style = "font-size: 20px; background-color: grey;";
             container.appendChild(div);
             container.appendChild(img);
+            container.appendChild(div_boton);
+            boton.innerHTML = "Comprar";
         }
 
         function crear_tag_isla_disponible(isla){
             const container = document.getElementById(`isla${isla.id_ayudante}`);
             container.innerHTML = '';
             const img = document.createElement('img');
+            const salto = document.createElement('br');
             const div = document.createElement('div');
+            const precio = document.createElement('p');
+            precio.innerText = isla.costo;
+            //precio.style = "font-size: 20px; position: relative; top: -50px; left: 50px; margin-top: 7rem;";
             div.className = "boton-comprar overlay";
             img.src = imagenes_islas[isla.id_ayudante - 1];
             img.width = "200";
@@ -160,8 +275,9 @@
             container.appendChild(img);
             //container.appendChild(boton);
             container.appendChild(div);
+            container.appendChild(precio);
             //TODO poner un boton precioso para comprar
-            boton.innerText = "Comprar";
+            boton.innerHTML = "Comprar<br>" + isla.costo;
 
             boton.onclick = ()=>{comprar_isla(isla.id_ayudante, isla.costo)};
         }
@@ -218,6 +334,7 @@
             img.src = imagen_url;
             img.width = "75";
             img.height = "75";
+            img.classList.add("popup");
             container.prepend(img);    
         }
 
@@ -300,6 +417,7 @@
             console.log(plata);
             const container = document.getElementById('plata');
             container.innerText = plata.carpincho.plata;//TODO embellecer esto
+            set_plata();
         }
 
         function cocinarB(){

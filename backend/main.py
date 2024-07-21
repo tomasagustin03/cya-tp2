@@ -214,14 +214,14 @@ def comprar_nivel(id_nivel):
         nivel = Nivel.query.get(id_nivel)
         carpincho = Carpincho.query.get(nivel.id)
         if nivel is None:
-            return jsonify({'message': 'error: no existe ese nivel'})
+            return jsonify({'message': 'error: no existe ese nivel', 'exito': False})
         nivel.obtenido = True 
-        carpincho.nivel = nivel
+        carpincho.nivel = nivel.id_nivel
         db.session.commit()
         print(f"Nivel comprado: {nivel}")
-        return jsonify({'message': 'Nivel comprado', 'nivel': {'id': nivel.id_nivel, 'obtenido': nivel.obtenido}})
+        return jsonify({'exito': True, 'nivel': {'id': nivel.id_nivel, 'obtenido': nivel.obtenido}})
     except Exception as e:
-        return jsonify({'message': 'Error al comprar el nivel', 'error': str(e)})
+        return jsonify({'exito': False, 'error': str(e)})
 
 if __name__ == '__main__':
     print('starting server...')

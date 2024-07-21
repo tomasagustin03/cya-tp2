@@ -11,7 +11,12 @@
     </div>
     <div class="configuracion-container" id="ventana">
         <div class="start-button">
-            <p onclick="destructora_de_mundos()" style="position: fixed; background-color: rgb(215, 57, 57); top: 50%; left: 50%; transform: translate(-50%, -50%);">REINICIAR PROGRESO</p>
+            <p onclick="destructora_de_mundos()" 
+                style="background-color: rgb(215, 57, 57); position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
+                REINICIAR PROGRESO</p>
+        </div>
+        <div class="start-button" style="display: inline-block;">
+            <a href=".." style="position: absolute; top: 70%; left: 50%; transform: translate(-50%, -50%);">VOLVER</a>
         </div>
     </div>
     <div class="tienda-container" id="tienda">
@@ -78,33 +83,58 @@
         let imagenes_islas = ['../imagenes/tenedor.png', '../imagenes/co.png', '../imagenes/ca.png'];
         let plata;
         let cocinando = false;
-        let imagen_en_uso_url; 
+        let imagen_en_uso_url;
+        let tiempo_de_coccion;
         crear_isla_principal();
+        set_tiempo_de_coccion();
         set_imagen_en_uso_url();
         cargar_mostrador();
         set_plata();
         cargar_islas();
 
-        async function comprar_nivel(id, estado){
-            const response = await fetch(`http://localhost:5000/carpincho/nivel/${id_nivel}`, {
+        async function comprar_nivel(id, estado, costo, tiempo_de_coccion){
+            if (plata < costo){
+                alert("No tienes suficiente plata");
+                return;
+            }
+            actualizar_plata(-costo);
+            const compra_exitosa = await request_compra_nivel(id);
+            if (compra_exitosa){
+                get_niveles();
+                set_tiempo_de_coccion();
+            } else{
+                alert("No se pudo comprar el nivel");
+                actualizar_plata(costo);
+            }
+        }
+
+        async function set_tiempo_de_coccion(){
+            const response = await fetch('http://localhost:5000/ultimonivel');
+            const data = await response.json();
+
+            tiempo_de_coccion = data.tiempo_de_coccion;
+        }
+
+        async function request_compra_nivel(id){
+            const response = await fetch(`http://localhost:5000/carpincho/nivel/${id}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({id: id})
-            });
-            const data = await response.json();
-            console.log(data);
-            if (data.exitoso){
-                get_niveles();
-            }
+            })
+            const resultado_operacion = await response.json();
+            console.log(resultado_operacion);
+            return resultado_operacion.exito;
         }
 
         async function get_niveles(){
             const response = await fetch('http://localhost:5000/niveles');
             const niveles = await response.json();
+            
             console.log(niveles);
             const container = document.querySelector('.niveles-container');
+            container.innerHTML = '';
             if (!container) {
             throw new Error('Container element not found');
         }
@@ -113,7 +143,7 @@
                 const estilo_boton = document.createElement('div');
                 const texto = document.createElement('p');
                 const boton = document.createElement('p');
-                boton.innerText = "Comprar";
+                boton.innerText = "Comprar" + nivel.costo;
                 estilo_boton.className = "boton-comprar";
                 texto.innerText = "Nivel " + nivel.id_nivel;
                 div.className = 'nivel';
@@ -122,11 +152,11 @@
                 div.appendChild(estilo_boton);
                 container.appendChild(div);
 
-                asignar_boton_nivel(boton, nivel.estado, nivel.id_nivel);
+                asignar_boton_nivel(boton, nivel.estado, nivel.id_nivel, nivel.costo, nivel.tiempo_de_coccion);
             });
         }
 
-        function asignar_boton_nivel(boton, estado, id){
+        function asignar_boton_nivel(boton, estado, id, costo, tiempo_de_coccion){
             switch(estado){
                 case 1:
                     boton.style = "font-size: 20px; background-color: grey;";
@@ -134,12 +164,12 @@
                     break;
                 case 2:
                     boton.style = "font-size: 20px; background-color: rgb(240, 128, 128);";
-                    boton.innerHTML = "Comprar";
-                    boton.onclick = ()=>{comprar_nivel(id, estado)};
+                    boton.innerHTML = "Comprar " + costo;
+                    boton.onclick = ()=>{comprar_nivel(id, estado, costo, tiempo_de_coccion)};
                     break;
                 case 3:
                     boton.style = "font-size: 20px; background-color: rgb(240, 128, 128);";
-                    boton.innerHTML = "Comprado";
+                    boton.innerHTML = "Obtenido";
                     break;
             }
             /*boton.style = "font-size: 20px; background-color: grey;";
@@ -387,7 +417,7 @@
             //document.getElementById("timer-button").innerText = "PARAR";
             //setTimeout(reset, 20000);
             if(cocinando){
-                setTimeout(()=>{guardar_plato(); cocinando_loop()}, 5000);
+                setTimeout(()=>{guardar_plato(); cocinando_loop()}, tiempo_de_coccion);
             }
         }
         async function vender_asado(){
@@ -418,12 +448,6 @@
             const container = document.getElementById('plata');
             container.innerText = plata.carpincho.plata;//TODO embellecer esto
             set_plata();
-        }
-
-        function cocinarB(){
-            if(cocinando){
-                setTimeout(()=>{registro(); cocinarA()}, 5000);
-            }
         }
 
         function response_recieved(response){

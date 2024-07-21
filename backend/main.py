@@ -140,6 +140,7 @@ def reiniciarprogreso():
     carpincho = Carpincho.query.get(1)
     print(carpincho)
     carpincho.plata = 0
+    carpincho.nombre = 'Asador'
 
     ayudantes = Ayudante.query.where(Ayudante.id_ayudante > 1)
     for ayudante in ayudantes:

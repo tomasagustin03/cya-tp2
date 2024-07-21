@@ -24,7 +24,6 @@ def carpincho():
             'id': carpincho.id,
             'nombre': carpincho.nombre,
             'plata': carpincho.plata,
-            'tiempo_de_coccion': carpincho.tiempo_de_coccion,
             'nivel': carpincho.nivel
         }
         return jsonify(carpincho_data)
@@ -111,12 +110,16 @@ def get_niveles():
             print(niveles_data) 
             niveles_data.append({
                 'id_nivel': nivel.id_nivel,
-                'estado': 3
+                'estado': 3,
+                'costo': nivel.costo,
+                'tiempo_de_coccion': nivel.tiempo_de_coccion
             })
         else:
             niveles_data.append({
                 'id_nivel': nivel.id_nivel,
-                'estado': estado
+                'estado': estado,
+                'costo': nivel.costo,
+                'tiempo_de_coccion': nivel.tiempo_de_coccion
             })
             estado = 1
     return jsonify(niveles_data)
@@ -126,11 +129,11 @@ def ultimo_nivel():
     try:
         ultimo_nivel = Nivel.query.where(Nivel.obtenido == True).order_by(desc(Nivel.id_nivel)).first()
         if ultimo_nivel:
-            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel})
+            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel, 'costo': ultimo_nivel.costo, 'tiempo_de_coccion': ultimo_nivel.tiempo_de_coccion})
         else:
-            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel})
+            return jsonify({'mensaje': 'Exito', 'id_ultimo_nivel': ultimo_nivel.id_nivel, 'costo': ultimo_nivel.costo, 'tiempo_de_coccion': ultimo_nivel.tiempo_de_coccion})
     except Exception as e:
-        return jsonify({'mensaje': 'Error', 'id_ultimo_nivel': 'Null'})
+        return jsonify({'mensaje': 'Error', 'id_ultimo_nivel': 'Null', 'costo': 'Null', 'tiempo_de_coccion': 'Null'})
 
 @app.route('/reiniciar', methods=['PUT'])
 def reiniciarprogreso():

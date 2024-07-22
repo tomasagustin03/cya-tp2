@@ -121,7 +121,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({id: id})
+                body: {id: id}
             })
             const resultado_operacion = await response.json();
             console.log(resultado_operacion);
@@ -172,9 +172,6 @@
                     boton.innerHTML = "Obtenido";
                     break;
             }
-            /*boton.style = "font-size: 20px; background-color: grey;";
-            boton.innerHTML = "Comprar";
-            boton.onclick = ()=>{comprar_nivel(estado)};*/
 
         }
 
@@ -194,10 +191,6 @@
             const todo = document.getElementById('container-ventana');
             document.getElementById('container-ventana').style.display = 'block';
             document.getElementById('ventana').style.display = 'flex';
-            /*const container = document.createElement('div');
-            container.className = 'configuracion';
-
-            todo.appendChild(container);*/
         }
 
         async function destructora_de_mundos(){
@@ -244,13 +237,13 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({id: id})
+                body: {id: id}
             })
             const resultado_operacion = await response.json();
             return resultado_operacion.exitoso;
         }
         async function cargar_islas(){
-            const response = await fetch('http://localhost:5000/islas')//TODO devuelve: [{id_ayudante: int, estado: int, }](1 es bloqueado, 2 es disponible, y 3 es obtenido)
+            const response = await fetch('http://localhost:5000/islas')
             const islas = await response.json();
             console.log(islas);
             for (let i = 0; i < islas.length; i++) {
@@ -303,10 +296,8 @@
             const boton = document.createElement('p');
             div.appendChild(boton);
             container.appendChild(img);
-            //container.appendChild(boton);
             container.appendChild(div);
             container.appendChild(precio);
-            //TODO poner un boton precioso para comprar
             boton.innerHTML = "Comprar<br>" + isla.costo;
 
             boton.onclick = ()=>{comprar_isla(isla.id_ayudante, isla.costo)};
@@ -322,7 +313,7 @@
             container.appendChild(img);
         }
 
-        function crear_tag_isla(isla){ //TODO terminar con switch de estado
+        function crear_tag_isla(isla){
             switch(isla.estado){
                 case 1:
                     crear_tag_isla_bloqueada(isla);
@@ -347,15 +338,8 @@
             container.innerText = plata;
         }
         async function set_imagen_en_uso_url() {
-        try {
             const response = await fetch('http://localhost:5000/imagen');
-            if (!response.ok) {
-            throw new Error(JSON.stringify(response));
-            }
             imagen_en_uso_url = await response.json();
-        } catch (err) {
-            console.error('Error al cargar las imágenes:', err);
-        }
         }
 
         function crear_tag_plato(imagen_url) {
@@ -369,11 +353,7 @@
         }
 
         async function cargar_mostrador() {
-        try {
             const response = await fetch('http://localhost:5000/mostrador');
-            if (!response.ok) {
-            throw new Error(JSON.stringify(response));
-            }
             const mostrador = await response.json();
 
             const container = document.getElementById('asados');
@@ -384,9 +364,6 @@
                 crear_tag_plato(asado.imagen_url);
             }
             });
-        } catch (err) {
-            console.error('Error al cargar el mostrador:', err);
-        }
         }
 
         function guardar_plato(){
@@ -432,7 +409,7 @@
             console.log(asado_vendido);
             const container = document.getElementById('asados');
             container.removeChild(container.lastChild);
-            actualizar_plata(asado_vendido.asado.valor_asado);//TODO embellecer esto
+            actualizar_plata(asado_vendido.asado.valor_asado);
         }
         async function actualizar_plata(valor){
             console.log(valor);
@@ -441,12 +418,12 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({valor: valor})
+                body: {valor: valor}
             });
             const plata = await response.json();
             console.log(plata);
             const container = document.getElementById('plata');
-            container.innerText = plata.carpincho.plata;//TODO embellecer esto
+            container.innerText = plata.carpincho.plata;
             set_plata();
         }
 
